@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "Bandeins Strange";
+  src: url("https://ex-reality.s3.amazonaws.com/fonts/BandeinsStrangeVariableGX.ttf");
+
+}
+
 .App {
   text-align: center;
 }
@@ -35,4 +41,42 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+h1 {
+  font-family: 'Bandeins Strange';
+  font-weight: 100;
+  font-variation-settings: "wght" 100, "wdth" 330;
+  letter-spacing: 6px;;
+}
+
+#video-container {
+  width: 800px;
+  height: 480px;
+  position: relative;
+  mix-blend-mode: difference;
+}
+
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#pose-video {
+  transform: scaleX(-1);
+}
+
+#pose-result {
+  color: black;
+  font-size: 100px;
+  text-align: right;
+  padding: 20px 30px 0 0;
+  font-family: 'Bandeins Strange';
+  font-weight: 100;
+  font-variation-settings: "wght" 100, "wdth" 330;
+  color: #fff;
 }
