@@ -1,32 +1,22 @@
 import { useEffect, useState } from 'react'
 
 import './App.css'
-import { fifthCircle, getKeyData, gestureStrings, getNotesOfChord } from './musicHandler'
+import { getKeyData, gestureStrings, getNotesOfChord } from './musicHandler'
 import { initCamera, config } from './video'
-import { initMidi, stop, sendMidiEvent, stopAllMidiEvents } from './midi'
+import { drawHand } from './canvasUtils'
+import { initMidi, sendMidiEvent, stopAllMidiEvents } from './midi'
+import Layout from './ui/Layout'
 
 let currentNotes
-const landmarkColors = {
-  thumb: 'red',
-  indexFinger: 'blue',
-  middleFinger: 'yellow',
-  ringFinger: 'green',
-  pinky: 'pink',
-  palmBase: 'white'
-}
-
-function drawPoint (ctx, x, y, r, color) {
-  ctx.beginPath()
-  ctx.arc(x, y, r, 0, 2 * Math.PI)
-  ctx.fillStyle = color
-  ctx.fill()
-}
+let mainLoop
 
 function App () {
   const [errorMode, setErrorMode] = useState(false)
   const [availableMidi, setAvailableMidi] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentKey, setCurrentKey] = useState('C')
+  const [currentMidi, setCurrentMidi] = useState('-1')
+  const [currentEvent, setCurrentEvent] = useState(null)
 
   useEffect(async () => {
     try {
@@ -43,8 +33,8 @@ function App () {
       })
 
       const canvas = document.querySelector('#pose-canvas')
-      canvas.width = config.video.width
-      canvas.height = config.video.height
+      canvas.width = 298
+      canvas.height = 284
       console.log('Canvas initialized')
     } catch (error) {
       setErrorMode(true)
@@ -52,16 +42,22 @@ function App () {
   }, [])
 
   const onSelectMidi = (e) => {
+    if (mainLoop) {
+      clearTimeout(mainLoop)
+    }
     setIsLoading(true)
     main(e.target.value)
+    setCurrentMidi(e.target.value)
   }
+
+  let chordResult
 
   const main = async (midiController) => {
     const video = document.querySelector('#pose-video')
     const canvas = document.querySelector('#pose-canvas')
     const ctx = canvas.getContext('2d')
 
-    const resultLayer = document.querySelector('#pose-result')
+    chordResult = ''
     window.globalCurrentKey = 'C'
 
     const knownGestures = [
@@ -70,31 +66,23 @@ function App () {
       window.fp.Gestures.I,
       window.fp.Gestures.H,
       window.fp.Gestures.V,
-      window.fp.Gestures.M,
+      window.fp.Gestures.ThumbsDown,
       window.fp.Gestures.L
     // window.fp.Gestures.GermanOne,
-    // window.fp.Gestures.ThumbsDown
     ]
 
     const GE = new window.fp.GestureEstimator(knownGestures)
 
     const model = await window.handpose.load()
-    console.log('Handpose model loaded')
 
     const estimateHands = async () => {
     // clear canvas overlay
       ctx.clearRect(0, 0, config.video.width, config.video.height)
-      resultLayer.innerText = ''
-
+      chordResult = ''
       const predictions = await model.estimateHands(video, true)
 
       for (let i = 0; i < predictions.length; i++) {
-      // draw colored dots at each predicted joint position
-        for (const part in predictions[i].annotations) {
-          for (const point of predictions[i].annotations[part]) {
-            drawPoint(ctx, point[0], point[1], 3, landmarkColors[part])
-          }
-        }
+        drawHand(predictions, ctx)
 
         const est = GE.estimate(predictions[i].landmarks, 7.5)
         if (est.gestures.length > 0) {
@@ -104,72 +92,43 @@ function App () {
           })
 
           const chordIndex = gestureStrings.indexOf(result.name)
-
           const notesToSend = getNotesOfChord(getKeyData(window.globalCurrentKey).chords[chordIndex])
-          console.log(`%c ${notesToSend} sending event`, 'background: #222; color: #bada55')
+          chordResult = getKeyData(window.globalCurrentKey).chords[chordIndex]
+          setCurrentEvent(chordIndex)
           sendMidiEvent(notesToSend, midiController)
           currentNotes = notesToSend
-          resultLayer.innerText = getKeyData(window.globalCurrentKey).chords[chordIndex]
         }
       }
-
-      setTimeout(() => { estimateHands() }, 1000 / config.video.fps)
+      mainLoop = setTimeout(() => { estimateHands() }, 1000 / config.video.fps)
     }
 
     setInterval(() => {
-      if (resultLayer.innerText === '') {
+      if (chordResult === '') {
         stopAllMidiEvents(currentNotes, midiController)
       }
-    }, 1000)
+    }, 3000)
 
     estimateHands()
     console.log('Starting predictions')
-    setIsLoading(false)
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 3000)
   }
-
   return (
     <div className='App'>
-      <body className='App-header'>
-        <div id='video-container'>
-          <video id='pose-video' className='layer' playsInline />
-          <canvas id='pose-canvas' className='layer' />
-          <div id='pose-result' className='layer' />
-        </div>
-        {errorMode && (
-          <p>There is not any midi device connected</p>
-        )}
-        <h1>multivac controller</h1>
-        <p>{isLoading ? 'Loading...' : 'Ready to play'}</p>
-        <select onChange={onSelectMidi}>
-          <option value='-1'>Select midi output </option>
-          {availableMidi.map(({ id, name }, index) => (<option value={index} key={id}>{name}</option>))}
-        </select>
-        <button onClick={stop}>Stop</button>
 
-        <p> Fifth circle </p>
-
-        {fifthCircle.map((key) => {
-          const keyData = getKeyData(key)
-          return (
-            <li
-              style={currentKey === key ? { color: 'blue' } : {}}
-              onClick={
-            () => {
-              setCurrentKey(keyData.tonic)
-              window.globalCurrentKey = keyData.tonic
-            }
-          } key={key}
-            >{key}: | Minor: {keyData.minorRelative}
-            </li>
-          )
-        }
-        )}
-        <h1>Chords</h1>
-        {getKeyData(currentKey).chords.map(chord => (
-          <li key={chord}>{chord}</li>
-        ))}
-
-      </body>
+      <Layout
+        errorMode={errorMode}
+        availableMidi={availableMidi}
+        onSelectMidi={onSelectMidi}
+        currentMidi={currentMidi}
+        isLoading={isLoading}
+        currentKey={currentKey}
+        setCurrentKey={setCurrentKey}
+        currentChords={getKeyData(currentKey).chords}
+        currentEvent={currentEvent}
+      />
+      <video id='pose-video' className='layer' style={{ display: 'none' }} playsInline />
     </div>
   )
 }

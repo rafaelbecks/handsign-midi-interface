@@ -6,7 +6,7 @@ const gestureStrings = [
   'i',
   'h',
   'v',
-  'm',
+  'thumbs_down',
   'l'
   // 'german_one',
   // 'thumbs_down'

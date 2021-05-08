@@ -22,7 +22,7 @@ const initCamera = async (width, height, fps) => {
 }
 
 const config = {
-  video: { width: 800, height: 600, fps: 30 }
+  video: { width: 298, height: 284, fps: 30 }
 }
 
 export { config, initCamera }
