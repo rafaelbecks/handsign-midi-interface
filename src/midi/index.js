@@ -2,7 +2,6 @@ import WebMidi from 'webmidi'
 
 let isStopped = true
 let firstSound = false
-const octave = 3
 
 const initMidi = async () =>
   new Promise((resolve, reject) => {
@@ -10,16 +9,14 @@ const initMidi = async () =>
       if (err) {
         reject(err)
       }
-      console.log('midi', WebMidi.outputs)
       resolve(WebMidi.outputs)
-      console.log(' midi device', WebMidi.outputs[1])
     })
   })
 
 const sendMidiEvent = (chord, midiController) => {
   if (chord) {
     console.log(`%c sending chord ${chord}`, 'background: #222; color: #bada55')
-    WebMidi.outputs[midiController].playNote(chord.map(note => note + octave), 1, { velocity: 0.25 })
+    WebMidi.outputs[midiController].playNote(chord.map(note => note), 1, { velocity: 0.25 })
 
     isStopped = false
     firstSound = true
@@ -29,7 +26,7 @@ const sendMidiEvent = (chord, midiController) => {
 const stopAllMidiEvents = (chord, midiController) => {
   if (!isStopped && firstSound) {
     console.log('%c stop chord', 'background: #222; color: #bada55')
-    WebMidi.outputs[midiController].stopNote(Object.values(chord.map(note => note + octave)).flat(), 1)
+    WebMidi.outputs[midiController].stopNote(Object.values(chord.map(note => note)).flat(), 1)
     isStopped = true
   }
 }

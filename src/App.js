@@ -17,6 +17,7 @@ function App () {
   const [currentKey, setCurrentKey] = useState('C')
   const [currentMidi, setCurrentMidi] = useState('-1')
   const [currentEvent, setCurrentEvent] = useState(null)
+  const [octave, setOctave] = useState(3)
 
   useEffect(async () => {
     try {
@@ -92,7 +93,7 @@ function App () {
           })
 
           const chordIndex = gestureStrings.indexOf(result.name)
-          const notesToSend = getNotesOfChord(getKeyData(window.globalCurrentKey).chords[chordIndex])
+          const notesToSend = getNotesOfChord(getKeyData(window.globalCurrentKey).chords[chordIndex], octave)
           chordResult = getKeyData(window.globalCurrentKey).chords[chordIndex]
           setCurrentEvent(chordIndex)
           sendMidiEvent(notesToSend, midiController)
@@ -116,7 +117,6 @@ function App () {
   }
   return (
     <div className='App'>
-
       <Layout
         errorMode={errorMode}
         availableMidi={availableMidi}
@@ -127,6 +127,8 @@ function App () {
         setCurrentKey={setCurrentKey}
         currentChords={getKeyData(currentKey).chords}
         currentEvent={currentEvent}
+        setOctave={setOctave}
+        octave={octave}
       />
       <video id='pose-video' className='layer' style={{ display: 'none' }} playsInline />
     </div>

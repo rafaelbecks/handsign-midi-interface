@@ -57,18 +57,27 @@ const getHandSigns = async () => {
   return svgs
 }
 
-const Layout = ({ onSelectMidi, availableMidi, currentMidi, isLoading, currentKey, setCurrentKey, currentChords, currentEvent }) => {
+const Layout = ({
+  onSelectMidi,
+  availableMidi,
+  currentMidi,
+  isLoading,
+  currentKey,
+  setCurrentKey,
+  currentChords,
+  currentEvent,
+  octave,
+  setOctave
+}) => {
   const midiSelect = useRef(null)
   const [sequencerSteps, setSecuencerSteps] = useState(8)
   const [handSignIcons, setHandSignIcons] = useState([])
 
-  console.log('isLoading', isLoading)
   useEffect(async () => {
     const svgs = await getHandSigns()
     setHandSignIcons(svgs)
   }, [])
 
-  console.log('currentEvent', currentEvent)
   return (
     <Container>
       <DeviceLayout>
@@ -93,8 +102,8 @@ const Layout = ({ onSelectMidi, availableMidi, currentMidi, isLoading, currentKe
                 <GreenScreenContainer>
                   <NumericControl
                     width='20px'
-                    minValue={1} maxValue={10} initialValue={3}
-                    onChange={(value) => console.log(value)}
+                    minValue={1} maxValue={10} initialValue={octave}
+                    onChange={(value) => setOctave(value)}
                   />
                 </GreenScreenContainer>
               </Control>
@@ -102,7 +111,7 @@ const Layout = ({ onSelectMidi, availableMidi, currentMidi, isLoading, currentKe
                 <h3 className='smallMargin'>CHORD</h3>
                 <SliderSwitch
                   onChange={(value) => console.log(value)}
-                  values={['TRIAD', '7TH']}
+                  values={['7TH', 'TRIAD']}
                 />
               </Control>
             </Row>

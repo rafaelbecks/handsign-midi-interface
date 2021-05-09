@@ -50,7 +50,6 @@ const drawHand = (prediction, ctx) => {
 
         // set line color
         ctx.fillStyle = '#fff'
-        console.log('here')
         ctx.fill()
       }
     })

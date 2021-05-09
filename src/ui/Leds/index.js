@@ -5,7 +5,6 @@ import {
 
 const Leds = ({ setCurrentKey, currentKey }) => {
   const onSelectNote = (note) => {
-    console.log('working')
     setCurrentKey(note)
     window.globalCurrentKey = note
   }

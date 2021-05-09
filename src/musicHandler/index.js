@@ -22,8 +22,9 @@ const getKeyData = (key) => {
   return Key.majorKey(key)
 }
 
-const getNotesOfChord = (chord) => {
-  return Chord.get(chord).notes
+const getNotesOfChord = (chord, octave) => {
+  const tonic = Chord.get(chord).tonic
+  return Chord.getChord(chord.replace(tonic, ''), `${tonic}${octave}`).notes
 }
 
 export { gestureStrings, fifthCircle, getKeyData, getNotesOfChord }
