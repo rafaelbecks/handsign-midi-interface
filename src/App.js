@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import './App.css'
-import { getKeyData, gestureStrings, getNotesOfChord } from './musicHandler'
+import { gestureStrings, getNotesOfChord, getCurrentChords } from './musicHandler'
 import { initCamera, config } from './video'
 import { drawHand } from './canvasUtils'
 import { initMidi, sendMidiEvent, stopAllMidiEvents } from './midi'
@@ -9,6 +9,13 @@ import Layout from './ui/Layout'
 
 let currentNotes
 let mainLoop
+
+window.midiConfig = {
+  globalCurrentKey: 'C',
+  octave: 3,
+  tonalMode: 'major',
+  chordMode: '7TH'
+}
 
 function App () {
   const [errorMode, setErrorMode] = useState(false)
@@ -18,6 +25,8 @@ function App () {
   const [currentMidi, setCurrentMidi] = useState('-1')
   const [currentEvent, setCurrentEvent] = useState(null)
   const [octave, setOctave] = useState(3)
+  const [tonalMode, setTonalMode] = useState('major')
+  const [chordMode, setChordMode] = useState('7TH')
 
   useEffect(async () => {
     try {
@@ -59,7 +68,6 @@ function App () {
     const ctx = canvas.getContext('2d')
 
     chordResult = ''
-    window.globalCurrentKey = 'C'
 
     const knownGestures = [
       window.fp.Gestures.B,
@@ -76,6 +84,8 @@ function App () {
 
     const model = await window.handpose.load()
 
+    const { midiConfig } = global
+
     const estimateHands = async () => {
     // clear canvas overlay
       ctx.clearRect(0, 0, config.video.width, config.video.height)
@@ -91,10 +101,9 @@ function App () {
           const result = est.gestures.reduce((p, c) => {
             return (p.confidence > c.confidence) ? p : c
           })
-
           const chordIndex = gestureStrings.indexOf(result.name)
-          const notesToSend = getNotesOfChord(getKeyData(window.globalCurrentKey).chords[chordIndex], octave)
-          chordResult = getKeyData(window.globalCurrentKey).chords[chordIndex]
+          chordResult = getCurrentChords(midiConfig.globalCurrentKey, midiConfig.tonalMode)[chordIndex]
+          const notesToSend = getNotesOfChord(chordResult, midiConfig.octave, midiConfig.chordMode)
           setCurrentEvent(chordIndex)
           sendMidiEvent(notesToSend, midiController)
           currentNotes = notesToSend
@@ -107,7 +116,7 @@ function App () {
       if (chordResult === '') {
         stopAllMidiEvents(currentNotes, midiController)
       }
-    }, 3000)
+    }, 500)
 
     estimateHands()
     console.log('Starting predictions')
@@ -115,6 +124,11 @@ function App () {
       setIsLoading(false)
     }, 3000)
   }
+
+  window.midiConfig.octave = octave
+  window.midiConfig.tonalMode = tonalMode
+  window.midiConfig.chordMode = chordMode
+
   return (
     <div className='App'>
       <Layout
@@ -125,10 +139,15 @@ function App () {
         isLoading={isLoading}
         currentKey={currentKey}
         setCurrentKey={setCurrentKey}
-        currentChords={getKeyData(currentKey).chords}
+        currentChords={getCurrentChords(currentKey, tonalMode)}
         currentEvent={currentEvent}
         setOctave={setOctave}
         octave={octave}
+        tonalMode={tonalMode}
+        setTonalMode={setTonalMode}
+        chordMode={chordMode}
+        setChordMode={setChordMode}
+
       />
       <video id='pose-video' className='layer' style={{ display: 'none' }} playsInline />
     </div>

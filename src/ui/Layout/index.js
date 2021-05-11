@@ -67,7 +67,11 @@ const Layout = ({
   currentChords,
   currentEvent,
   octave,
-  setOctave
+  setOctave,
+  tonalMode,
+  setTonalMode,
+  setChordMode,
+  chordMode
 }) => {
   const midiSelect = useRef(null)
   const [sequencerSteps, setSecuencerSteps] = useState(8)
@@ -91,7 +95,7 @@ const Layout = ({
               {handSignIcons.map((svg, index) => currentChords[index] && (
                 <ChordContainer key={index}>
                   <ReactSVG src={svg.default} wrapper='span' className={index === currentEvent ? 'chordActive' : 'chordInactive'} />
-                  <span className={index === currentEvent ? 'chordName chordActive' : ' chordName chordInactive'}>{currentChords[index]}</span>
+                  <span className={index === currentEvent ? 'chordName chordActive' : ' chordName chordInactive'}>{chordMode === '7TH' ? currentChords[index] : currentChords[index].replace('7', '')}</span>
                 </ChordContainer>
               ))}
             </HandSignContainer>
@@ -110,7 +114,7 @@ const Layout = ({
               <Control>
                 <h3 className='smallMargin'>CHORD</h3>
                 <SliderSwitch
-                  onChange={(value) => console.log(value)}
+                  onChange={(value) => setChordMode(value)}
                   values={['7TH', 'TRIAD']}
                 />
               </Control>
@@ -129,7 +133,7 @@ const Layout = ({
               }
               </ScreenMessage>
               <canvas id='pose-canvas' className='layer' />
-              <Leds currentKey={currentKey} setCurrentKey={setCurrentKey} />
+              <Leds currentKey={currentKey} setCurrentKey={setCurrentKey} tonalMode={tonalMode} />
             </FifthCircleSection>
           </MiddleSection>
           {/* MIDI CONFIG SECTION */}
@@ -154,7 +158,7 @@ const Layout = ({
               <Control>
                 <h3>TONAL MODE</h3>
                 <SliderSwitch
-                  onChange={(value) => console.log(value)}
+                  onChange={(value) => setTonalMode(value)}
                   values={['major', 'minor']}
                 />
               </Control>
