@@ -14,7 +14,8 @@ window.midiConfig = {
   globalCurrentKey: 'C',
   octave: 3,
   tonalMode: 'major',
-  chordMode: '7TH'
+  chordMode: '7TH',
+  velocity: 0.5
 }
 
 function App () {
@@ -27,6 +28,7 @@ function App () {
   const [octave, setOctave] = useState(3)
   const [tonalMode, setTonalMode] = useState('major')
   const [chordMode, setChordMode] = useState('7TH')
+  const [velocity, setVelocity] = useState(0.5)
 
   useEffect(async () => {
     try {
@@ -105,7 +107,7 @@ function App () {
           chordResult = getCurrentChords(midiConfig.globalCurrentKey, midiConfig.tonalMode)[chordIndex]
           const notesToSend = getNotesOfChord(chordResult, midiConfig.octave, midiConfig.chordMode)
           setCurrentEvent(chordIndex)
-          sendMidiEvent(notesToSend, midiController)
+          sendMidiEvent(notesToSend, velocity, midiController)
           currentNotes = notesToSend
         }
       }
@@ -147,7 +149,8 @@ function App () {
         setTonalMode={setTonalMode}
         chordMode={chordMode}
         setChordMode={setChordMode}
-
+        velocity={velocity}
+        setVelocity={setVelocity}
       />
       <video id='pose-video' className='layer' style={{ display: 'none' }} playsInline />
     </div>

@@ -13,11 +13,10 @@ const initMidi = async () =>
     })
   })
 
-const sendMidiEvent = (chord, midiController) => {
+const sendMidiEvent = (chord, velocity, midiController) => {
   if (chord) {
     console.log(`%c sending chord ${chord}`, 'background: #222; color: #bada55')
-    WebMidi.outputs[midiController].playNote(chord.map(note => note), 1, { velocity: 0.25 })
-
+    WebMidi.outputs[midiController].playNote(chord.map(note => note), 1, { velocity })
     isStopped = false
     firstSound = true
   }

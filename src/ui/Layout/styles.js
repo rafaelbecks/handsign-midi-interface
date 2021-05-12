@@ -213,6 +213,11 @@ const ChordContainer = styled.div`
     margin: 3px 20px;
 `
 
+const KnobContainer = styled.div`
+    display: flex;
+    justify-content: center;
+`
+
 export {
   DeviceLayout,
   Container,
@@ -236,5 +241,6 @@ export {
   OscilloscopeScreen,
   GridScreen,
   MidiSelect,
-  ChordContainer
+  ChordContainer,
+  KnobContainer
 }

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { ReactSVG } from 'react-svg'
+import { Knob } from 'react-rotary-knob'
+import * as skins from 'react-rotary-knob-skin-pack'
 
 import circlesTop from '../../assets/screw-circles-top.svg'
 import circlesBottom from '../../assets/screw-circles-bottom.svg'
 import dodecahedron from '../../assets/dodecahedron.png'
-import knob from '../../assets/knobs/knob_attenuation.svg'
 import oscilloscope from '../../assets/oscilloscope.png'
 import greenScreen from '../../assets/green-screen.mov'
 
@@ -36,7 +37,8 @@ import {
   GridScreen,
   MidiSelect,
   ScreenMessage,
-  ChordContainer
+  ChordContainer,
+  KnobContainer
 } from './styles'
 
 const Screws = () => (
@@ -71,7 +73,9 @@ const Layout = ({
   tonalMode,
   setTonalMode,
   setChordMode,
-  chordMode
+  chordMode,
+  velocity,
+  setVelocity
 }) => {
   const midiSelect = useRef(null)
   const [sequencerSteps, setSecuencerSteps] = useState(8)
@@ -95,7 +99,7 @@ const Layout = ({
               {handSignIcons.map((svg, index) => currentChords[index] && (
                 <ChordContainer key={index}>
                   <ReactSVG src={svg.default} wrapper='span' className={index === currentEvent ? 'chordActive' : 'chordInactive'} />
-                  <span className={index === currentEvent ? 'chordName chordActive' : ' chordName chordInactive'}>{chordMode === '7TH' ? currentChords[index] : currentChords[index].replace('7', '')}</span>
+                  <span className={index === currentEvent ? 'chordName chordActive' : ' chordName chordInactive'}>{chordMode === '7TH' ? currentChords[index] : currentChords[index].replace('7', '').replace('maj', '').replace('Maj', '')}</span>
                 </ChordContainer>
               ))}
             </HandSignContainer>
@@ -153,7 +157,18 @@ const Layout = ({
             <Row>
               <Control>
                 <h3>VELOCITY</h3>
-                <img src={knob} />
+                <KnobContainer>
+                  <Knob
+                    unlockDistance={0}
+                    onChange={(val) => {
+                      setVelocity(val)
+                      window.midiConfig.velocity = val
+                    }}
+                    min={0}
+                    max={1} value={velocity}
+                    skin={skins.s13}
+                  />
+                </KnobContainer>
               </Control>
               <Control>
                 <h3>TONAL MODE</h3>
