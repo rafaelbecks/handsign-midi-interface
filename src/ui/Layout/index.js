@@ -9,6 +9,7 @@ import dodecahedron from '../../assets/dodecahedron.png'
 import oscilloscope from '../../assets/oscilloscope.png'
 import greenScreen from '../../assets/green-screen.mov'
 
+import { minorModes } from '../../musicHandler'
 import Sequencer from '../Sequencer'
 import SliderSwitch from '../../components/SliderSwitch'
 import NumericControl from '../../components/NumericControl'
@@ -75,11 +76,15 @@ const Layout = ({
   setChordMode,
   chordMode,
   velocity,
-  setVelocity
+  setVelocity,
+  setHarmonicMode,
+  harmonicMode
 }) => {
   const midiSelect = useRef(null)
   const [sequencerSteps, setSecuencerSteps] = useState(8)
   const [handSignIcons, setHandSignIcons] = useState([])
+  const [bpm, setBpm] = useState(120)
+  const [sequencerState, setSequencerState] = useState('STOP')
 
   useEffect(async () => {
     const svgs = await getHandSigns()
@@ -99,7 +104,15 @@ const Layout = ({
               {handSignIcons.map((svg, index) => currentChords[index] && (
                 <ChordContainer key={index}>
                   <ReactSVG src={svg.default} wrapper='span' className={index === currentEvent ? 'chordActive' : 'chordInactive'} />
-                  <span className={index === currentEvent ? 'chordName chordActive' : ' chordName chordInactive'}>{chordMode === '7TH' ? currentChords[index] : currentChords[index].replace('7', '').replace('maj', '').replace('Maj', '')}</span>
+                  <span
+                    className={index === currentEvent ? 'chordName chordActive' : ' chordName chordInactive'}
+                  >
+                    {
+                      chordMode === '7TH'
+                        ? currentChords[index]
+                        : currentChords[index].replace('7', '').replace('maj', '').replace('Maj', '')
+                    }
+                  </span>
                 </ChordContainer>
               ))}
             </HandSignContainer>
@@ -115,6 +128,17 @@ const Layout = ({
                   />
                 </GreenScreenContainer>
               </Control>
+              {tonalMode === 'minor' && (
+                <Control>
+                  <h3 className='smallMargin'>MINOR</h3>
+                  <SliderSwitch
+                    onChange={(value) => {
+                      setHarmonicMode(minorModes[value])
+                    }}
+                    values={['nat', 'har', 'mel']}
+                  />
+                </Control>
+              )}
               <Control>
                 <h3 className='smallMargin'>CHORD</h3>
                 <SliderSwitch
@@ -201,7 +225,7 @@ const Layout = ({
               <Control>
                 <h3>MODE</h3>
                 <SliderSwitch
-                  onChange={(value) => console.log(value)}
+                  onChange={(value) => setSequencerState(value)}
                   values={['STOP', 'EDIT', 'PLAY']}
                 />
               </Control>
@@ -209,7 +233,7 @@ const Layout = ({
                 <h3>BPM / STEPS</h3>
                 <GreenScreenContainer>
                   <NumericControl
-                    minValue={0} maxValue={500} initialValue={120} onChange={(value) => console.log(value)}
+                    minValue={0} maxValue={500} initialValue={120} onChange={(value) => setBpm(Number(value))}
                   />
                   <NumericControl
                     minValue={4} maxValue={16} initialValue={8}
@@ -220,7 +244,7 @@ const Layout = ({
             </Row>
           </DeviceSection>
         </DeviceContent>
-        <Sequencer steps={sequencerSteps} />
+        <Sequencer steps={sequencerSteps} bpm={bpm} sequencerState={sequencerState} />
       </DeviceLayout>
     </Container>
 

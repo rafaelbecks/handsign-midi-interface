@@ -16,11 +16,15 @@ const fifthCircle = [
   'C', 'G', 'D', 'A', 'E', 'B', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F'
 ]
 
+const minorModes = {
+  har: 'harmonic',
+  mel: 'melodic',
+  nat: 'natural'
+}
+
 const getKeyData = (key, tonalMode) => {
   if (tonalMode === 'minor') {
     const { minorRelative } = Key.majorKey(key)
-    console.log('Key.minorKey(relativeMinor)', Key.minorKey(minorRelative))
-
     return Key.minorKey(minorRelative)
   }
 
@@ -34,10 +38,10 @@ const getNotesOfChord = (chord, octave, chordMode) => {
   return chordMode === '7TH' ? notes : notes.slice(0, 3)
 }
 
-const getCurrentChords = (currentKey, tonalMode) => {
+const getCurrentChords = (currentKey, tonalMode, harmonicMode) => {
   if (tonalMode === 'major') { return getKeyData(currentKey, tonalMode).chords }
 
-  return getKeyData(currentKey, tonalMode).harmonic.chords
+  return getKeyData(currentKey, tonalMode)[harmonicMode].chords
 }
 
-export { gestureStrings, fifthCircle, getKeyData, getNotesOfChord, getCurrentChords }
+export { gestureStrings, fifthCircle, getKeyData, getNotesOfChord, getCurrentChords, minorModes }

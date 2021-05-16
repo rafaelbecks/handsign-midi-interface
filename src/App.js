@@ -15,7 +15,8 @@ window.midiConfig = {
   octave: 3,
   tonalMode: 'major',
   chordMode: '7TH',
-  velocity: 0.5
+  velocity: 0.5,
+  harmonicMode: 'natural'
 }
 
 function App () {
@@ -29,7 +30,7 @@ function App () {
   const [tonalMode, setTonalMode] = useState('major')
   const [chordMode, setChordMode] = useState('7TH')
   const [velocity, setVelocity] = useState(0.5)
-
+  const [harmonicMode, setHarmonicMode] = useState('natural')
   useEffect(async () => {
     try {
       const midiControllers = await initMidi()
@@ -104,7 +105,7 @@ function App () {
             return (p.confidence > c.confidence) ? p : c
           })
           const chordIndex = gestureStrings.indexOf(result.name)
-          chordResult = getCurrentChords(midiConfig.globalCurrentKey, midiConfig.tonalMode)[chordIndex]
+          chordResult = getCurrentChords(midiConfig.globalCurrentKey, midiConfig.tonalMode, midiConfig.harmonicMode)[chordIndex]
           const notesToSend = getNotesOfChord(chordResult, midiConfig.octave, midiConfig.chordMode)
           setCurrentEvent(chordIndex)
           sendMidiEvent(notesToSend, velocity, midiController)
@@ -130,6 +131,7 @@ function App () {
   window.midiConfig.octave = octave
   window.midiConfig.tonalMode = tonalMode
   window.midiConfig.chordMode = chordMode
+  window.midiConfig.harmonicMode = harmonicMode
 
   return (
     <div className='App'>
@@ -141,7 +143,7 @@ function App () {
         isLoading={isLoading}
         currentKey={currentKey}
         setCurrentKey={setCurrentKey}
-        currentChords={getCurrentChords(currentKey, tonalMode)}
+        currentChords={getCurrentChords(currentKey, tonalMode, harmonicMode)}
         currentEvent={currentEvent}
         setOctave={setOctave}
         octave={octave}
@@ -151,6 +153,8 @@ function App () {
         setChordMode={setChordMode}
         velocity={velocity}
         setVelocity={setVelocity}
+        harmonicMode={harmonicMode}
+        setHarmonicMode={setHarmonicMode}
       />
       <video id='pose-video' className='layer' style={{ display: 'none' }} playsInline />
     </div>

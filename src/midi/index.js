@@ -24,7 +24,7 @@ const sendMidiEvent = (chord, velocity, midiController) => {
 
 const stopAllMidiEvents = (chord, midiController) => {
   if (!isStopped && firstSound) {
-    console.log('%c stop chord', 'background: #222; color: #bada55')
+    console.log(`%c stop chord ${chord}`, 'background: #222; color: #bada55')
     WebMidi.outputs[midiController].stopNote(Object.values(chord.map(note => note)).flat(), 1)
     isStopped = true
   }
