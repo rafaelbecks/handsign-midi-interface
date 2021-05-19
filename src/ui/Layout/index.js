@@ -78,7 +78,9 @@ const Layout = ({
   velocity,
   setVelocity,
   setHarmonicMode,
-  harmonicMode
+  harmonicMode,
+  savedStep,
+  setCurrentEvent
 }) => {
   const midiSelect = useRef(null)
   const [sequencerSteps, setSecuencerSteps] = useState(8)
@@ -185,11 +187,12 @@ const Layout = ({
                   <Knob
                     unlockDistance={0}
                     onChange={(val) => {
+                      console.log('val', val)
                       setVelocity(val)
                       window.midiConfig.velocity = val
                     }}
-                    min={0}
-                    max={1} value={velocity}
+                    min={0.5}
+                    max={2} value={velocity}
                     skin={skins.s13}
                   />
                 </KnobContainer>
@@ -225,7 +228,10 @@ const Layout = ({
               <Control>
                 <h3>MODE</h3>
                 <SliderSwitch
-                  onChange={(value) => setSequencerState(value)}
+                  onChange={(value) => {
+                    setSequencerState(value)
+                    window.midiConfig.sequencerState = value
+                  }}
                   values={['STOP', 'EDIT', 'PLAY']}
                 />
               </Control>
@@ -244,7 +250,14 @@ const Layout = ({
             </Row>
           </DeviceSection>
         </DeviceContent>
-        <Sequencer steps={sequencerSteps} bpm={bpm} sequencerState={sequencerState} />
+        <Sequencer
+          steps={sequencerSteps}
+          bpm={bpm}
+          sequencerState={sequencerState}
+          savedStep={savedStep}
+          setCurrentEvent={setCurrentEvent}
+          currentChords={currentChords}
+        />
       </DeviceLayout>
     </Container>
 

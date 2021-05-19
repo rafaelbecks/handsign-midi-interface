@@ -16,7 +16,9 @@ window.midiConfig = {
   tonalMode: 'major',
   chordMode: '7TH',
   velocity: 0.5,
-  harmonicMode: 'natural'
+  harmonicMode: 'natural',
+  editableStep: null,
+  sequencerState: 'STOP'
 }
 
 function App () {
@@ -31,6 +33,8 @@ function App () {
   const [chordMode, setChordMode] = useState('7TH')
   const [velocity, setVelocity] = useState(0.5)
   const [harmonicMode, setHarmonicMode] = useState('natural')
+  const [savedStep, setSavedStep] = useState(null)
+
   useEffect(async () => {
     try {
       const midiControllers = await initMidi()
@@ -107,9 +111,17 @@ function App () {
           const chordIndex = gestureStrings.indexOf(result.name)
           chordResult = getCurrentChords(midiConfig.globalCurrentKey, midiConfig.tonalMode, midiConfig.harmonicMode)[chordIndex]
           const notesToSend = getNotesOfChord(chordResult, midiConfig.octave, midiConfig.chordMode)
-          setCurrentEvent(chordIndex)
-          sendMidiEvent(notesToSend, velocity, midiController)
-          currentNotes = notesToSend
+
+          if (midiConfig.sequencerState === 'STOP') {
+            setCurrentEvent(chordIndex)
+            sendMidiEvent(notesToSend, midiConfig.velocity, midiController)
+          }
+
+          if (midiConfig.sequencerState === 'EDIT') {
+            console.log('chordResult', chordResult)
+            setSavedStep(chordResult)
+            sendMidiEvent(notesToSend, midiConfig.velocity, midiController, 2000)
+          }
         }
       }
       mainLoop = setTimeout(() => { estimateHands() }, 1000 / config.video.fps)
@@ -117,7 +129,7 @@ function App () {
 
     setInterval(() => {
       if (chordResult === '') {
-        stopAllMidiEvents(currentNotes, midiController)
+        stopAllMidiEvents(midiController)
       }
     }, 500)
 
@@ -132,6 +144,7 @@ function App () {
   window.midiConfig.tonalMode = tonalMode
   window.midiConfig.chordMode = chordMode
   window.midiConfig.harmonicMode = harmonicMode
+  window.midiConfig.velocity = velocity
 
   return (
     <div className='App'>
@@ -155,6 +168,8 @@ function App () {
         setVelocity={setVelocity}
         harmonicMode={harmonicMode}
         setHarmonicMode={setHarmonicMode}
+        savedStep={savedStep}
+        setCurrentEvent={setCurrentEvent}
       />
       <video id='pose-video' className='layer' style={{ display: 'none' }} playsInline />
     </div>
