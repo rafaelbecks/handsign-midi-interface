@@ -18,7 +18,8 @@ window.midiConfig = {
   velocity: 0.5,
   harmonicMode: 'natural',
   editableStep: null,
-  sequencerState: 'STOP'
+  sequencerState: 'STOP',
+  currentMidi: null
 }
 
 function App () {
@@ -46,6 +47,7 @@ function App () {
         video.play()
         video.addEventListener('loadeddata', event => {
           console.log('Camera is ready')
+          initHandDetection()
         })
       })
 
@@ -59,17 +61,13 @@ function App () {
   }, [])
 
   const onSelectMidi = (e) => {
-    if (mainLoop) {
-      clearTimeout(mainLoop)
-    }
-    setIsLoading(true)
-    main(e.target.value)
     setCurrentMidi(e.target.value)
+    window.midiConfig.currentMidi = e.target.value
   }
 
   let chordResult
 
-  const main = async (midiController) => {
+  const initHandDetection = async () => {
     const video = document.querySelector('#pose-video')
     const canvas = document.querySelector('#pose-canvas')
     const ctx = canvas.getContext('2d')
@@ -112,15 +110,21 @@ function App () {
           chordResult = getCurrentChords(midiConfig.globalCurrentKey, midiConfig.tonalMode, midiConfig.harmonicMode)[chordIndex]
           const notesToSend = getNotesOfChord(chordResult, midiConfig.octave, midiConfig.chordMode)
 
-          if (midiConfig.sequencerState === 'STOP') {
-            setCurrentEvent(chordIndex)
-            sendMidiEvent(notesToSend, midiConfig.velocity, midiController)
-          }
+          const midiController = midiConfig.currentMidi
+          console.log('here', midiController)
 
-          if (midiConfig.sequencerState === 'EDIT') {
-            console.log('chordResult', chordResult)
-            setSavedStep(chordResult)
-            sendMidiEvent(notesToSend, midiConfig.velocity, midiController, 2000)
+          if(midiController !== '-1'){
+            if (midiConfig.sequencerState === 'STOP' || midiConfig.sequencerState === 'PLAY') {
+              setCurrentEvent(chordIndex)
+              sendMidiEvent(notesToSend, midiConfig.velocity, midiController)
+            }
+
+            if (midiConfig.sequencerState === 'EDIT') {
+              console.log('chordResult', chordResult)
+              setSavedStep(chordResult)
+              console.log('chordResult', chordResult)
+              sendMidiEvent(notesToSend, midiConfig.velocity, midiController, 2000)
+            }
           }
         }
       }
@@ -128,8 +132,8 @@ function App () {
     }
 
     setInterval(() => {
-      if (chordResult === '') {
-        stopAllMidiEvents(midiController)
+      if (chordResult === '' && midiConfig.sequencerState !== 'PLAY') {
+        stopAllMidiEvents(window.midiConfig.currentMidi)
       }
     }, 500)
 
@@ -145,6 +149,7 @@ function App () {
   window.midiConfig.chordMode = chordMode
   window.midiConfig.harmonicMode = harmonicMode
   window.midiConfig.velocity = velocity
+  window.midiConfig.currentMidi = currentMidi
 
   return (
     <div className='App'>

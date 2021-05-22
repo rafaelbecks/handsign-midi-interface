@@ -11,13 +11,6 @@ Experimental MIDI interface. Using handsign detection to send chords using MIDI 
 + Fingerpose library to define different hand signs: https://github.com/andypotato/fingerpose
 + Tonal.js: To construct all chords data: https://github.com/tonaljs/tonal
 
-
-## TO DO
-
-+ Add MIDI Configs parameters to MIDI event manager
-+ Allow selecting midi channel
-+ Build sequencer
-
 ## Running
 
 Connect a MIDI device, this is mandatory

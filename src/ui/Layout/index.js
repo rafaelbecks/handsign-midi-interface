@@ -119,36 +119,7 @@ const Layout = ({
               ))}
             </HandSignContainer>
             <SmallSeparator />
-            <Row>
-              <Control style={{ marginRight: '10px' }}>
-                <h3 className='smallMargin'>OCTAVE</h3>
-                <GreenScreenContainer>
-                  <NumericControl
-                    width='20px'
-                    minValue={1} maxValue={10} initialValue={octave}
-                    onChange={(value) => setOctave(value)}
-                  />
-                </GreenScreenContainer>
-              </Control>
-              {tonalMode === 'minor' && (
-                <Control>
-                  <h3 className='smallMargin'>MINOR</h3>
-                  <SliderSwitch
-                    onChange={(value) => {
-                      setHarmonicMode(minorModes[value])
-                    }}
-                    values={['nat', 'har', 'mel']}
-                  />
-                </Control>
-              )}
-              <Control>
-                <h3 className='smallMargin'>CHORD</h3>
-                <SliderSwitch
-                  onChange={(value) => setChordMode(value)}
-                  values={['7TH', 'TRIAD']}
-                />
-              </Control>
-            </Row>
+
           </DeviceSection>
           {/* RECOGNITION SECTION */}
           <MiddleSection>
@@ -157,9 +128,9 @@ const Layout = ({
               <OscilloscopeScreen src={greenScreen} muted loop autoPlay noControls />
               <GridScreen src={oscilloscope} />
               <ScreenMessage>{
-              currentMidi === '-1'
-                ? 'SELECT DEVICE TO START'
-                : currentMidi !== '-1' && isLoading ? 'LOADING MODELS...' : ''
+              isLoading ? 'LOADING AI MODEL...'
+              : currentMidi === '-1'
+              ? 'SELECT DEVICE TO START' : ''
               }
               </ScreenMessage>
               <canvas id='pose-canvas' className='layer' />
@@ -206,7 +177,7 @@ const Layout = ({
               </Control>
             </Row>
 
-            <Row>
+            {/* <Row>
               <Control>
                 <h3>PLAY MODE</h3>
                 <SliderSwitch
@@ -219,6 +190,37 @@ const Layout = ({
                 <SliderSwitch
                   onChange={(value) => console.log(value)}
                   values={['channel', 'sequencer']}
+                />
+              </Control>
+            </Row> */}
+
+             <Row>
+              <Control style={{ marginRight: '10px' }}>
+                <h3 className='smallMargin'>OCTAVE</h3>
+                <GreenScreenContainer>
+                  <NumericControl
+                    width='20px'
+                    minValue={1} maxValue={10} initialValue={octave}
+                    onChange={(value) => setOctave(value)}
+                  />
+                </GreenScreenContainer>
+              </Control>
+              {tonalMode === 'minor' && (
+                <Control>
+                  <h3 className='smallMargin'>MINOR</h3>
+                  <SliderSwitch
+                    onChange={(value) => {
+                      setHarmonicMode(minorModes[value])
+                    }}
+                    values={['nat', 'har', 'mel']}
+                  />
+                </Control>
+              )}
+              <Control>
+                <h3 className='smallMargin'>CHORD</h3>
+                <SliderSwitch
+                  onChange={(value) => setChordMode(value)}
+                  values={['7TH', 'TRIAD']}
                 />
               </Control>
             </Row>
@@ -251,6 +253,7 @@ const Layout = ({
           </DeviceSection>
         </DeviceContent>
         <Sequencer
+          currentMidi={currentMidi}
           steps={sequencerSteps}
           bpm={bpm}
           sequencerState={sequencerState}

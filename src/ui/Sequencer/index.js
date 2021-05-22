@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Container, Step } from './styles'
+import { Led } from '../Leds/styles'
 
 import { getNotesOfChord } from '../../musicHandler'
 import { sendMidiEvent, stopAllMidiEvents } from '../../midi'
@@ -28,7 +29,7 @@ const Sequencer = (props) => {
       case 'STOP':
         clearInterval(sequencerTimer)
         currentStep = 0
-        setPlayingStep(currentStep)
+        setPlayingStep(null)
         break
       case 'PLAY':
         return startSequencer(currentStep, sequencerTimer)
@@ -36,24 +37,25 @@ const Sequencer = (props) => {
         break
     }
 
-    if (props.savedStep !== null && editableStep) {
-      steps[editableStep] = props.savedStep
+    if (props.savedStep !== null && editableStep >=0) {
+      const localSteps = steps
+      localSteps[editableStep] = props.savedStep
+      setSteps(localSteps)
       setEditableStep(null)
     }
   }, [props.steps, props.sequencerState, props.savedStep])
 
   const startSequencer = (currentStep, sequencerTimer) => {
+    setEditableStep(null)
     sequencerTimer = setInterval(() => {
       if (currentStep === steps.length) { currentStep = 0 }
       setPlayingStep(currentStep)
-      console.log('steps[currentStep]', steps[currentStep])
       if (steps[currentStep]) {
-        console.log('getNotesOfChord(steps[currentStep]', getNotesOfChord(steps[currentStep]))
-        // TODO ADD MIDI CONTROLLER AND TRIAD MODE
+
         sendMidiEvent(
-          getNotesOfChord(steps[currentStep], global.midiConfig.octave, '7TH'),
+          getNotesOfChord(steps[currentStep], global.midiConfig.octave, global.midiConfig.chordMode),
           global.midiConfig.velocity,
-          0
+          props.currentMidi
         )
 
         const index = props.currentChords.indexOf(steps[currentStep])
@@ -63,8 +65,7 @@ const Sequencer = (props) => {
       const previousStep = currentStep - 1 < 0 ? steps.length - 1 : currentStep - 1
 
       if (steps[previousStep] === undefined) {
-        // TODO ADD MIDI CONTROLLER
-        stopAllMidiEvents(0)
+        stopAllMidiEvents(props.currentMidi)
       }
       currentStep++
     }, (60 / props.bpm) * 1000)
@@ -79,22 +80,38 @@ const Sequencer = (props) => {
     }
   }
 
-  console.log('editableStep', editableStep)
   console.log('steps', steps)
 
   return (
     <Container>
       <ul>
         {Array.from(Array(props.steps).keys()).map(n =>
+        <div>
           <Step
             className={n === playingStep && 'selectedStep'} key={n} onClick={
             () => selectStepToEdit(n)
           }
           >
-            <span className={[0, 4, 8, 12].includes(n) && 'markedNumber'}>
+            <span className={editableStep === n && 'markedNumber'}>
               {n + 1}
             </span>
           </Step>
+          <Led
+          onClick={
+            () => {
+              const localSteps = steps
+              localSteps[n] = undefined
+              setSteps(localSteps)
+              setEditableStep(null)
+            }
+          }
+          style={{
+             margin: '8px 32px',
+             width: '12px',
+             height: '12px',
+          }} className={`${n === playingStep ? 'ledOn' : 'ledOff'} ${steps[n] ? 'minorOn' : ''}`} />
+        </div>
+
         )}
       </ul>
     </Container>
