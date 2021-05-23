@@ -184,7 +184,9 @@ const Layout = ({
                     min={0.5}
                     max={2} value={velocity}
                     skin={skins.s13}
+                    preciseMode={false}
                   />
+                  <span>{Math.round(velocity * 100) / 100}</span>
                 </KnobContainer>
               </Control>
               <Control>
@@ -195,6 +197,12 @@ const Layout = ({
                 />
               </Control>
             </Row>
+            <div
+            style={{
+              width: '154px',
+              margin: '14px 0'
+            }}
+             />
 
             {/* <Row>
               <Control>
@@ -212,7 +220,6 @@ const Layout = ({
                 />
               </Control>
             </Row> */}
-
              <Row>
               <Control style={{ marginRight: '10px' }}>
                 <h3 className='smallMargin'>OCTAVE</h3>

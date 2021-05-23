@@ -215,6 +215,14 @@ const ChordContainer = styled.div`
 const KnobContainer = styled.div`
     display: flex;
     justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    span {
+      color: #fff;
+      font-size: 9px;
+      font-family: Futura;
+      margin-top: 5px;
+    }
 `
 
 export {

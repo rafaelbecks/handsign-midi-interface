@@ -1,8 +1,3 @@
-@font-face {
-  font-family: "Bandeins Strange";
-  src: url("https://ex-reality.s3.amazonaws.com/fonts/BandeinsStrangeVariableGX.ttf");
-
-}
 
 .App {
   text-align: center;
@@ -68,7 +63,6 @@
   font-size: 100px;
   text-align: right;
   padding: 20px 30px 0 0;
-  font-family: 'Bandeins Strange';
   font-weight: 100;
   font-variation-settings: "wght" 100, "wdth" 330;
   color: #fff;
