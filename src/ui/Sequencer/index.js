@@ -74,13 +74,10 @@ const Sequencer = (props) => {
 
   const selectStepToEdit = (step) => {
     if (props.sequencerState === 'EDIT') {
-      console.log('here')
       setEditableStep(step)
       window.midiConfig.editableStep = step
     }
   }
-
-  console.log('steps', steps)
 
   return (
     <Container>

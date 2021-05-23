@@ -32,10 +32,13 @@ const getKeyData = (key, tonalMode) => {
 }
 
 const getNotesOfChord = (chord, octave, chordMode) => {
-  const tonic = Chord.get(chord).tonic
+  const { tonic, notes } = Chord.get(chord)
+  const { midiConfig: { inversionMode }} = window
 
-  const notes = Chord.getChord(chord.replace(tonic, ''), `${tonic}${octave}`).notes
-  return chordMode === '7TH' ? notes : notes.slice(0, 3)
+  const rootNote = inversionMode === 'F' ? notes[0] : notes[Number(inversionMode)]
+
+  const notesToReturn = Chord.getChord(chord.replace(tonic, ''), `${tonic}${octave}`, `${rootNote}${octave}`).notes
+  return chordMode === '7TH' ? notesToReturn : notesToReturn.slice(0, 3)
 }
 
 const getCurrentChords = (currentKey, tonalMode, harmonicMode) => {

@@ -157,7 +157,7 @@ const GreenScreenContainer = styled.div`
 
 const HandSignContainer = styled.div`
     width: 100%;
-    margin: auto;
+    margin: 10px auto;
     svg {
         margin: 0px 20px;
     }

@@ -19,7 +19,8 @@ window.midiConfig = {
   harmonicMode: 'natural',
   editableStep: null,
   sequencerState: 'STOP',
-  currentMidi: null
+  currentMidi: null,
+  inversionMode: 'F'
 }
 
 function App () {
@@ -35,6 +36,7 @@ function App () {
   const [velocity, setVelocity] = useState(0.5)
   const [harmonicMode, setHarmonicMode] = useState('natural')
   const [savedStep, setSavedStep] = useState(null)
+  const [inversionMode, setInversionMode] = useState('F')
 
   useEffect(async () => {
     try {
@@ -120,9 +122,7 @@ function App () {
             }
 
             if (midiConfig.sequencerState === 'EDIT') {
-              console.log('chordResult', chordResult)
               setSavedStep(chordResult)
-              console.log('chordResult', chordResult)
               sendMidiEvent(notesToSend, midiConfig.velocity, midiController, 2000)
             }
           }
@@ -150,6 +150,7 @@ function App () {
   window.midiConfig.harmonicMode = harmonicMode
   window.midiConfig.velocity = velocity
   window.midiConfig.currentMidi = currentMidi
+  window.midiConfig.inversionMode = inversionMode
 
   return (
     <div className='App'>
@@ -175,6 +176,7 @@ function App () {
         setHarmonicMode={setHarmonicMode}
         savedStep={savedStep}
         setCurrentEvent={setCurrentEvent}
+        setInversionMode={setInversionMode}
       />
       <video id='pose-video' className='layer' style={{ display: 'none' }} playsInline />
     </div>

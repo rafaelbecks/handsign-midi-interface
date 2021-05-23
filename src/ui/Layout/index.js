@@ -80,7 +80,8 @@ const Layout = ({
   setHarmonicMode,
   harmonicMode,
   savedStep,
-  setCurrentEvent
+  setCurrentEvent,
+  setInversionMode
 }) => {
   const midiSelect = useRef(null)
   const [sequencerSteps, setSecuencerSteps] = useState(8)
@@ -119,6 +120,26 @@ const Layout = ({
               ))}
             </HandSignContainer>
             <SmallSeparator />
+            <Row>
+              <Control>
+                <h3>INVERSION</h3>
+                <SliderSwitch
+                  onChange={(value) => setInversionMode(value)}
+                  values={chordMode === '7TH' ? ['F', '1', '2', '3'] : ['F', '1', '2']}
+                />
+              </Control>
+              {tonalMode === 'minor' && (
+                <Control>
+                  <h3 className='smallMargin'>MINOR</h3>
+                  <SliderSwitch
+                    onChange={(value) => {
+                      setHarmonicMode(minorModes[value])
+                    }}
+                    values={['nat', 'har', 'mel']}
+                  />
+                </Control>
+              )}
+            </Row>
 
           </DeviceSection>
           {/* RECOGNITION SECTION */}
@@ -143,7 +164,6 @@ const Layout = ({
             <h3>DEVICE</h3>
             <GreenScreen
               style={{ width: '150px' }} value={availableMidi[currentMidi] ? availableMidi[currentMidi].name : 'NO DEVICE SELECTED'} type='text' onClick={() => {
-                console.log(midiSelect)
                 midiSelect.current.focus()
               }}
             />
@@ -158,7 +178,6 @@ const Layout = ({
                   <Knob
                     unlockDistance={0}
                     onChange={(val) => {
-                      console.log('val', val)
                       setVelocity(val)
                       window.midiConfig.velocity = val
                     }}
@@ -205,17 +224,7 @@ const Layout = ({
                   />
                 </GreenScreenContainer>
               </Control>
-              {tonalMode === 'minor' && (
-                <Control>
-                  <h3 className='smallMargin'>MINOR</h3>
-                  <SliderSwitch
-                    onChange={(value) => {
-                      setHarmonicMode(minorModes[value])
-                    }}
-                    values={['nat', 'har', 'mel']}
-                  />
-                </Control>
-              )}
+
               <Control>
                 <h3 className='smallMargin'>CHORD</h3>
                 <SliderSwitch
