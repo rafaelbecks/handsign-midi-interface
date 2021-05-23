@@ -137,3 +137,6 @@ h3{
   stroke: #FEEBBB;
 }
 
+button, video, svg, input, p, h2, img, span {
+  -webkit-app-region: no-drag;
+}

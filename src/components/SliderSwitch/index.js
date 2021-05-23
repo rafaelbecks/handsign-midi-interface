@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { SliderContainer, SliderBase, SliderRange, Labels } from './styles'
 
-
 const positionValues = {
-  2: [2,28],
-  3: [2,15,28],
+  2: [2, 28],
+  3: [2, 15, 28],
   4: [0, 10, 20, 28]
 }
 

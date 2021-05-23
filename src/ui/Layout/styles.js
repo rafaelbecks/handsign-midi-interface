@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import wood from '../../assets/wood.jpg'
+// import wood from '../../assets/wood.jpg'
 
 const DeviceLayout = styled.div`
     width: 1270px;
@@ -9,7 +9,6 @@ const DeviceLayout = styled.div`
     -webkit-box-shadow: -3px 17px 25px -1px rgba(0,0,0,0.75);
     -moz-box-shadow: -3px 17px 25px -1px rgba(0,0,0,0.75);
     box-shadow: -3px 17px 25px -1px rgba(0,0,0,0.75);
-    border-radius: 20px;
     position: relative;
     padding: 24px 34px;
 `
@@ -19,9 +18,7 @@ const Container = styled.div`
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background: url(${wood});
-    background-size: cover;
-    background-position: center;
+    background: transparent;
 `
 
 const RightCircleTop = styled.img`
