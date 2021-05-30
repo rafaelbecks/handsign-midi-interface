@@ -16,15 +16,19 @@ const initMidi = async () =>
 
 const sendMidiEvent = (chord, velocity, midiController, duration = null) => {
   if (chord) {
-    console.log(`%c sending chord ${chord + velocity}`, 'background: #222; color: #bada55')
-    WebMidi.outputs[midiController].playNote(chord.map(note => note), 1, { velocity, duration })
+    if (!window.isPlaying) {
+      console.log(`%c sending chordx ${chord + velocity}`, 'background: #222; color: #bada55')
+      WebMidi.outputs[midiController].playNote(chord.map(note => note), 1, { velocity })
+    }
     isStopped = false
+    window.isPlaying = true
     firstSound = true
   }
 }
 
 const stopAllMidiEvents = (midiController) => {
   if (!isStopped && firstSound) {
+    window.isPlaying = false
     console.log('%c stop all midi events', 'background: #222; color: #bada55')
     WebMidi.outputs[midiController].stopNote(getAllNotes3Octaves(), 1)
     isStopped = true

@@ -177,8 +177,8 @@ const Layout = ({
                     setVelocity(val)
                     window.midiConfig.velocity = val
                   }}
-                  min={0.5}
-                  max={2} value={velocity}
+                  min={1}
+                  max={3} value={velocity}
                   skin={skins.s13}
                   preciseMode={false}
                 />

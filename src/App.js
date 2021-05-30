@@ -15,7 +15,7 @@ window.midiConfig = {
   octave: 3,
   tonalMode: 'major',
   chordMode: '7TH',
-  velocity: 0.5,
+  velocity: 1.5,
   harmonicMode: 'natural',
   editableStep: null,
   sequencerState: 'STOP',
@@ -33,7 +33,7 @@ function App () {
   const [octave, setOctave] = useState(3)
   const [tonalMode, setTonalMode] = useState('major')
   const [chordMode, setChordMode] = useState('7TH')
-  const [velocity, setVelocity] = useState(0.5)
+  const [velocity, setVelocity] = useState(1.5)
   const [harmonicMode, setHarmonicMode] = useState('natural')
   const [savedStep, setSavedStep] = useState(null)
   const [inversionMode, setInversionMode] = useState('F')
@@ -113,9 +113,8 @@ function App () {
           const notesToSend = getNotesOfChord(chordResult, midiConfig.octave, midiConfig.chordMode)
 
           const midiController = midiConfig.currentMidi
-          console.log('here', midiController)
 
-          if(midiController !== '-1'){
+          if (midiController !== '-1') {
             if (midiConfig.sequencerState === 'STOP' || midiConfig.sequencerState === 'PLAY') {
               setCurrentEvent(chordIndex)
               sendMidiEvent(notesToSend, midiConfig.velocity, midiController)
@@ -128,7 +127,7 @@ function App () {
           }
         }
       }
-      mainLoop = setTimeout(() => { estimateHands() }, 1000 / config.video.fps)
+      setTimeout(() => { estimateHands() }, 1000 / config.video.fps)
     }
 
     setInterval(() => {

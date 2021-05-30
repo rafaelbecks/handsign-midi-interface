@@ -37,7 +37,7 @@ const Sequencer = (props) => {
         break
     }
 
-    if (props.savedStep !== null && editableStep >=0) {
+    if (props.savedStep !== null && editableStep >= 0) {
       const localSteps = steps
       localSteps[editableStep] = props.savedStep
       setSteps(localSteps)
@@ -51,11 +51,11 @@ const Sequencer = (props) => {
       if (currentStep === steps.length) { currentStep = 0 }
       setPlayingStep(currentStep)
       if (steps[currentStep]) {
-
         sendMidiEvent(
           getNotesOfChord(steps[currentStep], global.midiConfig.octave, global.midiConfig.chordMode),
           global.midiConfig.velocity,
-          props.currentMidi
+          props.currentMidi,
+          1
         )
 
         const index = props.currentChords.indexOf(steps[currentStep])
@@ -83,18 +83,18 @@ const Sequencer = (props) => {
     <Container>
       <ul>
         {Array.from(Array(props.steps).keys()).map(n =>
-        <div>
-          <Step
-            className={n === playingStep && 'selectedStep'} key={n} onClick={
+          <div key={n}>
+            <Step
+              className={n === playingStep && 'selectedStep'} key={n} onClick={
             () => selectStepToEdit(n)
           }
-          >
-            <span className={editableStep === n && 'markedNumber'}>
-              {n + 1}
-            </span>
-          </Step>
-          <Led
-          onClick={
+            >
+              <span className={editableStep === n && 'markedNumber'}>
+                {n + 1}
+              </span>
+            </Step>
+            <Led
+              onClick={
             () => {
               const localSteps = steps
               localSteps[n] = undefined
@@ -102,12 +102,13 @@ const Sequencer = (props) => {
               setEditableStep(null)
             }
           }
-          style={{
-             margin: '8px 32px',
-             width: '12px',
-             height: '12px',
-          }} className={`${n === playingStep ? 'ledOn' : 'ledOff'} ${steps[n] ? 'minorOn' : ''}`} />
-        </div>
+              style={{
+                margin: '8px 32px',
+                width: '12px',
+                height: '12px'
+              }} className={`${n === playingStep ? 'ledOn' : 'ledOff'} ${steps[n] ? 'minorOn' : ''}`}
+            />
+          </div>
 
         )}
       </ul>
