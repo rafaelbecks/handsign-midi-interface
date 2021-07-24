@@ -166,7 +166,7 @@ const GridScreen = styled.img`
     top: 106px;
     left: 82px;
     height: 336px;
-    mix-blend-mode: screen;
+    filter: brightness(2.5);
 `
 
 const OscilloscopeScreen = styled.video`

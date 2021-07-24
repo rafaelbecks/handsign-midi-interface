@@ -117,7 +117,7 @@ function App () {
           if (midiController !== '-1') {
             if (midiConfig.sequencerState === 'STOP' || midiConfig.sequencerState === 'PLAY') {
               setCurrentEvent(chordIndex)
-              sendMidiEvent(notesToSend, midiConfig.velocity, midiController)
+              sendMidiEvent(notesToSend, midiConfig.velocity, midiController, 1000)
             }
 
             if (midiConfig.sequencerState === 'EDIT') {

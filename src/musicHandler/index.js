@@ -2,8 +2,8 @@ import { Key, Chord } from '@tonaljs/tonal'
 
 const gestureStrings = [
   'b',
-  'a',
   'i',
+  'a',
   'h',
   'v',
   'thumbs_down',
@@ -33,18 +33,29 @@ const getKeyData = (key, tonalMode) => {
 
 const getNotesOfChord = (chord, octave, chordMode) => {
   const { tonic, notes } = Chord.get(chord)
-  const { midiConfig: { inversionMode }} = window
+  const { midiConfig: { inversionMode } } = window
 
   const rootNote = inversionMode === 'F' ? notes[0] : notes[Number(inversionMode)]
 
   const notesToReturn = Chord.getChord(chord.replace(tonic, ''), `${tonic}${octave}`, `${rootNote}${octave}`).notes
-  return chordMode === '7TH' ? notesToReturn : notesToReturn.slice(0, 3)
+
+  const notesByChordMode = {
+    '7TH': notesToReturn,
+    TRIAD: notesToReturn.slice(0, 3),
+    KEY: notesToReturn.slice(0, 1)
+  }
+
+  return notesByChordMode[chordMode]
 }
 
 const getCurrentChords = (currentKey, tonalMode, harmonicMode) => {
   if (tonalMode === 'major') { return getKeyData(currentKey, tonalMode).chords }
 
-  return getKeyData(currentKey, tonalMode)[harmonicMode].chords
+  const chords = getKeyData(currentKey, tonalMode)[harmonicMode].chords
+
+  chords[4] = chords[4].replace('m', '')
+
+  return chords
 }
 
 export { gestureStrings, fifthCircle, getKeyData, getNotesOfChord, getCurrentChords, minorModes }

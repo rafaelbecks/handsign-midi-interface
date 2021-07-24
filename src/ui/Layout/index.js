@@ -7,7 +7,6 @@ import circlesTop from '../../assets/screw-circles-top.svg'
 import circlesBottom from '../../assets/screw-circles-bottom.svg'
 import dodecahedron from '../../assets/dodecahedron.png'
 import oscilloscope from '../../assets/oscilloscope.png'
-import greenScreen from '../../assets/green-screen.mov'
 
 import { minorModes } from '../../musicHandler'
 import Sequencer from '../Sequencer'
@@ -32,7 +31,6 @@ import {
   GreenScreenContainer,
   HandSignContainer,
   SmallSeparator,
-  OscilloscopeScreen,
   GridScreen,
   MidiSelect,
   ScreenMessage,
@@ -142,7 +140,7 @@ const Layout = ({
         <MiddleSection>
           <FifthCircleSection>
             <img src={dodecahedron} />
-            <OscilloscopeScreen src={greenScreen} muted loop autoPlay noControls />
+            <div className='scanlines' />
             <GridScreen src={oscilloscope} />
             <ScreenMessage>{
               isLoading ? 'LOADING AI MODEL...'
@@ -232,7 +230,7 @@ const Layout = ({
               <h3 className='smallMargin'>CHORD</h3>
               <SliderSwitch
                 onChange={(value) => setChordMode(value)}
-                values={['7TH', 'TRIAD']}
+                values={['7TH', 'TRIAD', 'KEY']}
               />
             </Control>
           </Row>
